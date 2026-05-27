@@ -28,8 +28,8 @@ body,
 
 body {
   margin: 0;
-  min-width: 1280px;
-  overflow: hidden;
+  min-width: 1024px;
+  overflow: auto;
 }
 
 button,
@@ -1089,8 +1089,7 @@ img {
 }
 
 .app-shell {
-  height: 100vh;
-  min-height: 0;
+  min-height: 100vh;
   padding: 12px 16px;
   display: flex;
   flex-direction: column;
@@ -1127,8 +1126,6 @@ img {
 .side-panel,
 .center-stage {
   min-height: 0;
-  height: 100%;
-  overflow: hidden;
 }
 
 .side-panel {
@@ -1278,7 +1275,6 @@ img {
 .spotlight-card {
   gap: 10px;
   padding: 14px;
-  height: 100%;
   min-height: 0;
 }
 
@@ -1308,7 +1304,7 @@ img {
 }
 
 .wheel-shell {
-  width: clamp(380px, calc(100vh - 388px), 560px);
+  width: clamp(280px, calc(100vh - 420px), 560px);
   max-width: 100%;
 }
 
@@ -2146,7 +2142,7 @@ img {
 
 @media (max-width: 1600px) {
   body {
-    min-width: 1200px;
+    min-width: 1024px;
   }
 
   .layout-3col {
@@ -2156,7 +2152,7 @@ img {
 
 @media (max-width: 1360px) {
   body {
-    min-width: 1120px;
+    min-width: 1024px;
   }
 
   .layout-3col {
@@ -2176,6 +2172,10 @@ img {
     min-width: 980px;
   }
 
+  .wheel-shell {
+    width: clamp(260px, calc(100vh - 440px), 480px);
+  }
+
   .layout-3col {
     grid-template-columns: 1fr;
   }
@@ -2191,5 +2191,108 @@ img {
   .student-editor-row,
   .group-bar-row {
     grid-template-columns: 1fr;
+  }
+}
+
+/* 适配低矮屏幕（如 1024x768、1366x768） */
+@media (max-height: 800px) {
+  .app-shell {
+    padding: 8px 12px;
+  }
+
+  .top-title {
+    margin-bottom: 6px;
+  }
+
+  .top-title h1 {
+    font-size: clamp(1.6rem, 2.5vw, 2.8rem);
+  }
+
+  .eyebrow {
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+  }
+
+  .version-badge {
+    padding: 6px 10px;
+    font-size: 0.78rem;
+  }
+
+  .layout-3col {
+    gap: 8px;
+  }
+
+  .panel-card {
+    padding: 8px 10px;
+  }
+
+  .section-head {
+    margin-bottom: 6px;
+  }
+
+  .section-head h2 {
+    font-size: 0.88rem;
+  }
+
+  .class-grid,
+  .group-grid {
+    gap: 5px;
+  }
+
+  .class-button,
+  .group-button {
+    min-height: 32px;
+    padding: 6px 8px;
+    border-radius: 11px;
+    font-size: 0.8rem;
+  }
+
+  .mode-button {
+    min-height: 34px;
+    font-size: 0.82rem;
+  }
+
+  .spotlight-card {
+    gap: 6px;
+    padding: 10px;
+  }
+
+  .current-student-banner {
+    padding: 8px 12px;
+  }
+
+  .current-student-copy strong {
+    font-size: clamp(1.05rem, 1.4vw, 1.6rem);
+  }
+
+  .wheel-shell {
+    width: clamp(240px, calc(100vh - 480px), 440px);
+  }
+
+  .wheel-label span {
+    min-width: 56px;
+    padding: 5px 7px;
+    font-size: 0.68rem;
+  }
+
+  .spin-button {
+    min-width: 140px;
+    padding: 8px 18px;
+  }
+
+  .spin-button span {
+    font-size: 0.98rem;
+  }
+
+  .result-announcer {
+    padding: 8px 10px;
+    border-radius: 14px;
+  }
+
+  .student-chip {
+    min-width: 60px;
+    min-height: 30px;
+    padding: 5px 7px;
+    font-size: 0.78rem;
   }
 }
