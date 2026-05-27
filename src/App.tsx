@@ -199,51 +199,22 @@ const DRAW_MODE_META: Record<DrawMode, { label: string; hint: string }> = {
 }
 
 function ResultMarquee({ text }: { text: string }) {
-  const containerRef = useRef<HTMLSpanElement | null>(null)
-  const textRef = useRef<HTMLSpanElement | null>(null)
-  const [overflow, setOverflow] = useState(false)
+  // 中文字符宽度约为英文字符的 2 倍，按等效宽度估算是否溢出
+  const effectiveLength = [...text].reduce((sum, char) => {
+    const code = char.codePointAt(0) ?? 0
+    return sum + (code > 0x7f ? 2 : 1)
+  }, 0)
 
-  // 用 useLayoutEffect + rAF 确保 DOM 布局完成后再测量
-  useEffect(() => {
-    const container = containerRef.current
-    const textEl = textRef.current
-    if (!container || !textEl) {
-      return
-    }
-
-    let cancelled = false
-
-    const measure = () => {
-      if (cancelled) return
-      const textWidth = textEl.scrollWidth
-      const containerWidth = container.clientWidth
-      if (textWidth > 0 && containerWidth > 0) {
-        setOverflow(textWidth > containerWidth + 1)
-      }
-    }
-
-    // rAF 确保测量发生在布局完成后
-    const raf = requestAnimationFrame(measure)
-
-    const observer = new ResizeObserver(() => {
-      requestAnimationFrame(measure)
-    })
-    observer.observe(container)
-
-    return () => {
-      cancelled = true
-      cancelAnimationFrame(raf)
-      observer.disconnect()
-    }
-  }, [text])
+  // 结果卡片约能容纳 11 个中文字符宽度（即 22 个等效单位）
+  const shouldScroll = effectiveLength > 22
 
   return (
-    <span ref={containerRef} className={`marquee-text ${overflow ? 'scrolling' : ''}`}>
+    <span className={`marquee-text ${shouldScroll ? 'scrolling' : ''}`}>
       <span className="marquee-track">
         <span className="marquee-segment">
-          <span ref={textRef}>{text}</span>
+          <span>{text}</span>
         </span>
-        {overflow ? (
+        {shouldScroll ? (
           <span className="marquee-segment" aria-hidden="true">
             <span>{text}</span>
           </span>
