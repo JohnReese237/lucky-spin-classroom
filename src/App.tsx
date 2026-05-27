@@ -593,10 +593,9 @@ function App() {
       advanceQueue: params.advanceQueue ?? true,
     })
 
-    // 批量抽奖中间结果：只更新 ref，不触发 React 渲染和特效
+    // 批量抽奖中间结果：只跳过粒子特效，仍更新 UI 以实时出结果
     persistState(nextState, {
       writeToStorage: !params.deferSave,
-      skipReactUpdate: params.batchSilent ?? false,
     })
 
     if (params.batchSilent) {
@@ -846,29 +845,7 @@ function App() {
       }
 
       if (deferBatchSave) {
-        // 批量模式结束：一次性同步 React 状态并触发最终结果展示
-        const finalState = cloneState({
-          ...appStateRef.current,
-          lastSavedAt: new Date().toISOString(),
-        })
-        const savedState = saveState(finalState)
-        appStateRef.current = savedState
-        setAppState(savedState)
-        // 展示最后一名学生的结果
-        const finalClassroom = savedState.classrooms[savedState.settings.currentClassId]
-        const lastRecord = finalClassroom.history[0]
-        if (lastRecord) {
-          celebrateOutcome(lastRecord, {
-            originalReward: lastRecord.originalReward,
-            finalReward: lastRecord.finalReward,
-            capConverted: lastRecord.capConverted,
-            conversionChain: lastRecord.conversionChain,
-            stickerDelta: lastRecord.stickerDelta,
-            mysteryOutcome: lastRecord.mysteryOutcome ?? null,
-            rerollDecision: lastRecord.rerollChoice ?? null,
-            specificRewardText: lastRecord.specificRewardText,
-          })
-        }
+        saveState(appStateRef.current)
       }
       showToast(`本次已自动完成 ${totalCount} 位学生抽奖。`, 'success')
     } catch {
