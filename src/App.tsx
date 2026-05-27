@@ -385,9 +385,10 @@ function App() {
 
   const persistState = (
     nextState: AppState,
-    options: { writeToStorage?: boolean } = {},
+    options: { writeToStorage?: boolean; skipReactUpdate?: boolean } = {},
   ) => {
     const shouldWriteToStorage = options.writeToStorage ?? true
+    const skipReactUpdate = options.skipReactUpdate ?? false
     const savedState = shouldWriteToStorage
       ? saveState(nextState)
       : cloneState({
@@ -395,7 +396,9 @@ function App() {
           lastSavedAt: new Date().toISOString(),
         })
     appStateRef.current = savedState
-    setAppState(savedState)
+    if (!skipReactUpdate) {
+      setAppState(savedState)
+    }
     return savedState
   }
 
@@ -562,6 +565,7 @@ function App() {
     keepSpinning?: boolean
     deferSave?: boolean
     silent?: boolean
+    batchSilent?: boolean
   }) => {
     const currentState = appStateRef.current
     const classroom = currentState.classrooms[params.classId]
@@ -589,7 +593,20 @@ function App() {
       advanceQueue: params.advanceQueue ?? true,
     })
 
-    persistState(nextState, { writeToStorage: !params.deferSave })
+    // 批量抽奖中间结果：只更新 ref，不触发 React 渲染和特效
+    persistState(nextState, {
+      writeToStorage: !params.deferSave,
+      skipReactUpdate: params.batchSilent ?? false,
+    })
+
+    if (params.batchSilent) {
+      setPendingSpin(null)
+      if (!params.keepSpinning) {
+        setSpinActive(false)
+      }
+      return
+    }
+
     celebrateOutcome(outcome.record, outcome.resolution)
     setPendingSpin(null)
     setRerollChoicePending(null)
@@ -763,8 +780,12 @@ function App() {
         activeClassroom.queue.groupIds.length,
       )
       let highRewardCount = 0
+      const totalCount = targetStudentIds.length
+      const isBatchMode = deferBatchSave
 
-      for (const studentId of targetStudentIds) {
+      for (let index = 0; index < totalCount; index += 1) {
+        const studentId = targetStudentIds[index]
+        const isLast = index === totalCount - 1
         const liveClassroom = appStateRef.current.classrooms[appStateRef.current.settings.currentClassId]
         const liveStudent = liveClassroom.students[studentId]
         if (!liveStudent) {
@@ -795,11 +816,14 @@ function App() {
           }
         }
 
-        setPendingSpin(spinMeta)
+        // 批量模式：只有最后一个学生才触发 UI 更新和特效
+        if (!isBatchMode || isLast) {
+          setPendingSpin(spinMeta)
+        }
 
         await animateWheelToReward(displayReward, {
-          duration: targetStudentIds.length === 1 ? 1800 : 820,
-          extraTurns: targetStudentIds.length === 1 ? 3.4 : 1.8,
+          duration: totalCount === 1 ? 1800 : 820,
+          extraTurns: totalCount === 1 ? 3.4 : 1.8,
         })
 
         finalizeSpin({
@@ -812,7 +836,8 @@ function App() {
           advanceQueue: spinMeta.advanceQueue,
           keepSpinning: true,
           deferSave: deferBatchSave,
-          silent: true,
+          silent: isLast ? false : true,
+          batchSilent: isBatchMode && !isLast,
         })
 
         if (drawMode !== 'single') {
@@ -821,9 +846,31 @@ function App() {
       }
 
       if (deferBatchSave) {
-        persistState(appStateRef.current)
+        // 批量模式结束：一次性同步 React 状态并触发最终结果展示
+        const finalState = cloneState({
+          ...appStateRef.current,
+          lastSavedAt: new Date().toISOString(),
+        })
+        const savedState = saveState(finalState)
+        appStateRef.current = savedState
+        setAppState(savedState)
+        // 展示最后一名学生的结果
+        const finalClassroom = savedState.classrooms[savedState.settings.currentClassId]
+        const lastRecord = finalClassroom.history[0]
+        if (lastRecord) {
+          celebrateOutcome(lastRecord, {
+            originalReward: lastRecord.originalReward,
+            finalReward: lastRecord.finalReward,
+            capConverted: lastRecord.capConverted,
+            conversionChain: lastRecord.conversionChain,
+            stickerDelta: lastRecord.stickerDelta,
+            mysteryOutcome: lastRecord.mysteryOutcome ?? null,
+            rerollDecision: lastRecord.rerollChoice ?? null,
+            specificRewardText: lastRecord.specificRewardText,
+          })
+        }
       }
-      showToast(`本次已自动完成 ${targetStudentIds.length} 位学生抽奖。`, 'success')
+      showToast(`本次已自动完成 ${totalCount} 位学生抽奖。`, 'success')
     } catch {
       if (deferBatchSave) {
         persistState(appStateRef.current)

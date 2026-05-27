@@ -1304,7 +1304,7 @@ img {
 }
 
 .wheel-shell {
-  width: clamp(280px, calc(100vh - 420px), 560px);
+  width: clamp(320px, calc(100vh - 400px), 560px);
   max-width: 100%;
 }
 
@@ -2266,7 +2266,7 @@ img {
   }
 
   .wheel-shell {
-    width: clamp(240px, calc(100vh - 480px), 440px);
+    width: clamp(280px, calc(100vh - 460px), 420px);
   }
 
   .wheel-label span {
