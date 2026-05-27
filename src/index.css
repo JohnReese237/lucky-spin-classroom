@@ -1333,6 +1333,56 @@ img {
   font-size: 1.12rem;
 }
 
+.combo-selector {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.combo-label {
+  color: #8defff;
+  font-family: 'Orbitron', 'Rajdhani', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  margin-right: 2px;
+}
+
+.combo-chip {
+  min-width: 34px;
+  padding: 5px 8px;
+  border: 0;
+  border-radius: 14px;
+  color: #dff7ff;
+  background: linear-gradient(180deg, rgba(18, 37, 82, 0.95), rgba(8, 18, 42, 0.96));
+  box-shadow:
+    inset 0 0 0 1px rgba(144, 215, 255, 0.18),
+    0 8px 14px rgba(0, 0, 0, 0.16);
+  font-size: 0.74rem;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.combo-chip:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 0 0 1px rgba(178, 236, 255, 0.34),
+    0 10px 18px rgba(0, 0, 0, 0.2);
+}
+
+.combo-chip.active {
+  color: #ffffff;
+  background: linear-gradient(180deg, rgba(255, 203, 77, 0.92), rgba(255, 127, 47, 0.88));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 236, 158, 0.42),
+    0 0 14px rgba(255, 211, 113, 0.24);
+}
+
+.combo-chip:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .result-announcer {
   flex: 0 0 auto;
   padding: 10px 14px;

@@ -229,6 +229,7 @@ function App() {
   const [rerollChoicePending, setRerollChoicePending] = useState<PendingSpin | null>(null)
   const [mysteryModal, setMysteryModal] = useState<MysteryModalState | null>(null)
   const [activeBurst, setActiveBurst] = useState<EffectBurst | null>(null)
+  const [comboCount, setComboCount] = useState(1)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const wheelShellRef = useRef<HTMLDivElement | null>(null)
   const audioRef = useRef(new LuckySpinAudio())
@@ -716,7 +717,7 @@ function App() {
     let targetStudentIds =
       drawMode === 'single'
         ? selectedSingleStudentId
-          ? [selectedSingleStudentId]
+          ? Array.from({ length: comboCount }, () => selectedSingleStudentId)
           : []
         : activeClassroom.queue.studentIds.slice(activeClassroom.queue.currentIndex)
 
@@ -929,6 +930,7 @@ function App() {
     setDrawMode(nextMode)
     setSelectedSingleStudentId(null)
     setProfileStudentId(null)
+    setComboCount(1)
 
     if (nextMode === 'group' && currentClassroom.queue.groupIds.length > 1) {
       mutateState((draft) => {
@@ -1442,6 +1444,26 @@ function App() {
                 </div>
               </div>
 
+              {drawMode === 'single' ? (
+                <div className="combo-selector">
+                  <span className="combo-label">连抽</span>
+                  {[1, 2, 3, 5, 10].map((n) => (
+                    <button
+                      key={n}
+                      type="button"
+                      className={`combo-chip ${comboCount === n ? 'active' : ''}`}
+                      onClick={() => {
+                        playSound('click')
+                        setComboCount(n)
+                      }}
+                      disabled={spinActive}
+                    >
+                      {n}次
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+
               <button
                 type="button"
                 className={`spin-button ${spinActive ? 'busy' : ''}`}
@@ -1449,7 +1471,13 @@ function App() {
                 onClick={() => void startSpin()}
                 disabled={spinActive || appState.isPaused}
               >
-                <span>{appState.isPaused ? '已暂停' : '点击抽奖'}</span>
+                <span>
+                  {appState.isPaused
+                    ? '已暂停'
+                    : drawMode === 'single' && comboCount > 1
+                      ? `连抽 ${comboCount} 次`
+                      : '点击抽奖'}
+                </span>
               </button>
             </div>
 
