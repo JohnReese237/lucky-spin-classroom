@@ -199,26 +199,15 @@ const DRAW_MODE_META: Record<DrawMode, { label: string; hint: string }> = {
 }
 
 function ResultMarquee({ text }: { text: string }) {
-  // 中文字符宽度约为英文字符的 2 倍，按等效宽度估算是否溢出
-  const effectiveLength = [...text].reduce((sum, char) => {
-    const code = char.codePointAt(0) ?? 0
-    return sum + (code > 0x7f ? 2 : 1)
-  }, 0)
-
-  // 结果卡片约能容纳 11 个中文字符宽度（即 22 个等效单位）
-  const shouldScroll = effectiveLength > 22
-
   return (
-    <span className={`marquee-text ${shouldScroll ? 'scrolling' : ''}`}>
+    <span className="marquee-text scrolling">
       <span className="marquee-track">
         <span className="marquee-segment">
           <span>{text}</span>
         </span>
-        {shouldScroll ? (
-          <span className="marquee-segment" aria-hidden="true">
-            <span>{text}</span>
-          </span>
-        ) : null}
+        <span className="marquee-segment" aria-hidden="true">
+          <span>{text}</span>
+        </span>
       </span>
     </span>
   )
