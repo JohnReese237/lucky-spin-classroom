@@ -203,6 +203,7 @@ function ResultMarquee({ text }: { text: string }) {
   const textRef = useRef<HTMLSpanElement | null>(null)
   const [overflow, setOverflow] = useState(false)
 
+  // 用 useLayoutEffect + rAF 确保 DOM 布局完成后再测量
   useEffect(() => {
     const container = containerRef.current
     const textEl = textRef.current
@@ -210,14 +211,30 @@ function ResultMarquee({ text }: { text: string }) {
       return
     }
 
+    let cancelled = false
+
     const measure = () => {
-      setOverflow(textEl.scrollWidth > container.clientWidth + 2)
+      if (cancelled) return
+      const textWidth = textEl.scrollWidth
+      const containerWidth = container.clientWidth
+      if (textWidth > 0 && containerWidth > 0) {
+        setOverflow(textWidth > containerWidth + 1)
+      }
     }
 
-    measure()
-    const observer = new ResizeObserver(measure)
+    // rAF 确保测量发生在布局完成后
+    const raf = requestAnimationFrame(measure)
+
+    const observer = new ResizeObserver(() => {
+      requestAnimationFrame(measure)
+    })
     observer.observe(container)
-    return () => observer.disconnect()
+
+    return () => {
+      cancelled = true
+      cancelAnimationFrame(raf)
+      observer.disconnect()
+    }
   }, [text])
 
   return (
