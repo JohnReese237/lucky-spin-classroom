@@ -56,7 +56,8 @@ img {
   background-color: #061027;
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 100% auto;
+  background-size: cover;
+  background-attachment: fixed;
 }
 
 .screen-overlay {
