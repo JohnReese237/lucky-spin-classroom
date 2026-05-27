@@ -1731,7 +1731,7 @@ img {
 
 .marquee-text.scrolling .marquee-track {
   min-width: max-content;
-  animation: result-text-slide 20s linear infinite;
+  animation: result-text-slide 8s linear infinite;
   backface-visibility: hidden;
   will-change: transform;
 }
@@ -2064,7 +2064,7 @@ img {
 
 @keyframes result-text-slide {
   0%,
-  10% {
+  4% {
     transform: translate3d(0, 0, 0);
   }
   100% {

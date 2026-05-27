@@ -199,15 +199,34 @@ const DRAW_MODE_META: Record<DrawMode, { label: string; hint: string }> = {
 }
 
 function ResultMarquee({ text }: { text: string }) {
-  const shouldScroll = text.length > 12
+  const containerRef = useRef<HTMLSpanElement | null>(null)
+  const textRef = useRef<HTMLSpanElement | null>(null)
+  const [overflow, setOverflow] = useState(false)
+
+  useEffect(() => {
+    const container = containerRef.current
+    const textEl = textRef.current
+    if (!container || !textEl) {
+      return
+    }
+
+    const measure = () => {
+      setOverflow(textEl.scrollWidth > container.clientWidth + 2)
+    }
+
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(container)
+    return () => observer.disconnect()
+  }, [text])
 
   return (
-    <span className={`marquee-text ${shouldScroll ? 'scrolling' : ''}`}>
+    <span ref={containerRef} className={`marquee-text ${overflow ? 'scrolling' : ''}`}>
       <span className="marquee-track">
         <span className="marquee-segment">
-          <span>{text}</span>
+          <span ref={textRef}>{text}</span>
         </span>
-        {shouldScroll ? (
+        {overflow ? (
           <span className="marquee-segment" aria-hidden="true">
             <span>{text}</span>
           </span>
