@@ -1444,41 +1444,43 @@ function App() {
                 </div>
               </div>
 
-              {drawMode === 'single' ? (
-                <div className="combo-selector">
-                  <span className="combo-label">连抽</span>
-                  {[1, 2, 3, 5, 10].map((n) => (
-                    <button
-                      key={n}
-                      type="button"
-                      className={`combo-chip ${comboCount === n ? 'active' : ''}`}
-                      onClick={() => {
-                        playSound('click')
-                        setComboCount(n)
-                      }}
-                      disabled={spinActive}
-                    >
-                      {n}次
-                    </button>
-                  ))}
-                </div>
-              ) : null}
+              <div className="spin-row">
+                {drawMode === 'single' ? (
+                  <div className="combo-selector">
+                    <span className="combo-label">连抽</span>
+                    {[1, 2, 3, 5, 10].map((n) => (
+                      <button
+                        key={n}
+                        type="button"
+                        className={`combo-chip ${comboCount === n ? 'active' : ''}`}
+                        onClick={() => {
+                          playSound('click')
+                          setComboCount(n)
+                        }}
+                        disabled={spinActive}
+                      >
+                        {n}次
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
 
-              <button
-                type="button"
-                className={`spin-button ${spinActive ? 'busy' : ''}`}
-                onPointerDown={unlockAudio}
-                onClick={() => void startSpin()}
-                disabled={spinActive || appState.isPaused}
-              >
-                <span>
-                  {appState.isPaused
-                    ? '已暂停'
-                    : drawMode === 'single' && comboCount > 1
-                      ? `连抽 ${comboCount} 次`
-                      : '点击抽奖'}
-                </span>
-              </button>
+                <button
+                  type="button"
+                  className={`spin-button ${spinActive ? 'busy' : ''}`}
+                  onPointerDown={unlockAudio}
+                  onClick={() => void startSpin()}
+                  disabled={spinActive || appState.isPaused}
+                >
+                  <span>
+                    {appState.isPaused
+                      ? '已暂停'
+                      : drawMode === 'single' && comboCount > 1
+                        ? `连抽 ${comboCount} 次`
+                        : '点击抽奖'}
+                  </span>
+                </button>
+              </div>
             </div>
 
             <div className="result-announcer compact-announcer">

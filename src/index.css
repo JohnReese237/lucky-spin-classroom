@@ -56,7 +56,7 @@ img {
   background-color: #061027;
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 100% 100%;
+  background-size: cover;
 }
 
 .screen-overlay {
@@ -827,7 +827,7 @@ img {
   padding: 26px;
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 100% 100%;
+  background-size: cover;
 }
 
 .modal-head {
@@ -1333,11 +1333,19 @@ img {
   font-size: 1.12rem;
 }
 
+.spin-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
 .combo-selector {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-top: 2px;
+  margin-top: 0;
 }
 
 .combo-label {
