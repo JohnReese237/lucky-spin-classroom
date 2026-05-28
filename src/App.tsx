@@ -1073,24 +1073,27 @@ function App() {
     playSound('click')
     setDrawMode(nextMode)
     setSelectedSingleStudentId(null)
+    setSingleGroupFilterId(null)
     setProfileStudentId(null)
     setComboCount(1)
 
-    if (
+    const needsQueueRebuild =
       (nextMode === 'group' && currentClassroom.queue.groupIds.length > 1) ||
       (nextMode === 'multiGroup' && currentClassroom.queue.groupIds.length > MAX_QUEUE_GROUPS)
-    ) {
-      mutateState((draft) => {
-        const classroom = draft.classrooms[draft.settings.currentClassId]
+
+    mutateState((draft) => {
+      const classroom = draft.classrooms[draft.settings.currentClassId]
+      classroom.roundResults = []
+
+      if (needsQueueRebuild) {
         const nextGroupIds =
           nextMode === 'group'
             ? classroom.queue.groupIds.slice(0, 1)
             : classroom.queue.groupIds.slice(0, MAX_QUEUE_GROUPS)
         classroom.queue = buildQueueFromGroupIds(classroom, nextGroupIds)
-        classroom.roundResults = []
         draft.settings.lastSelectedGroupOrder = classroom.queue.groupIds
-      })
-    }
+      }
+    })
   }
 
   const selectClass = (classId: string) => {
@@ -1341,6 +1344,7 @@ function App() {
       onClick={() => {
         if (drawMode === 'single') {
           setSelectedSingleStudentId(student.id)
+          setSingleGroupFilterId(student.groupId)
           setProfileStudentId(null)
         } else {
           setProfileStudentId(student.id)

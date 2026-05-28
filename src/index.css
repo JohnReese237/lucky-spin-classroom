@@ -366,6 +366,7 @@ img {
 }
 
 .spotlight-card {
+  position: relative;
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
@@ -429,10 +430,15 @@ img {
 }
 
 .completion-banner {
+  position: absolute;
+  z-index: 30;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
   text-align: center;
   padding: 7px 18px;
-  margin-bottom: 4px;
   border-radius: 18px;
+  white-space: nowrap;
   font-family: 'Orbitron', 'Rajdhani', sans-serif;
   font-size: 0.78rem;
   font-weight: 600;
