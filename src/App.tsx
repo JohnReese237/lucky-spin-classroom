@@ -279,7 +279,6 @@ function App() {
   const [mysteryModal, setMysteryModal] = useState<MysteryModalState | null>(null)
   const [activeBurst, setActiveBurst] = useState<EffectBurst | null>(null)
   const [comboCount, setComboCount] = useState(1)
-  const [completionBanner, setCompletionBanner] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const wheelShellRef = useRef<HTMLDivElement | null>(null)
   const audioRef = useRef(new LuckySpinAudio())
@@ -308,15 +307,6 @@ function App() {
     const timer = window.setTimeout(() => setToast(null), 2800)
     return () => window.clearTimeout(timer)
   }, [toast])
-
-  useEffect(() => {
-    if (!completionBanner) {
-      return
-    }
-
-    const timer = window.setTimeout(() => setCompletionBanner(null), 3200)
-    return () => window.clearTimeout(timer)
-  }, [completionBanner])
 
   useEffect(() => {
     return () => {
@@ -895,7 +885,6 @@ function App() {
     spinActiveRef.current = true
     setSpinActive(true)
     setLatestOutcome(null)
-    setCompletionBanner(null)
     const deferBatchSave = targetStudentIds.length > 1
 
     try {
@@ -975,7 +964,6 @@ function App() {
       if (deferBatchSave) {
         saveState(appStateRef.current)
       }
-      setCompletionBanner(`本次已自动完成 ${totalCount} 位学生抽奖`)
     } catch {
       if (deferBatchSave) {
         persistState(appStateRef.current)
@@ -1473,9 +1461,6 @@ function App() {
 
         <section className="center-stage">
           <div className="stage-card spotlight-card">
-            {completionBanner ? (
-              <div className="completion-banner">{completionBanner}</div>
-            ) : null}
             <div className={`wheel-stage ${spinActive ? 'spinning' : ''}`}>
               <div className="wheel-light-frame">
                 <div
