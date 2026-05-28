@@ -522,7 +522,7 @@ function App() {
     const shouldWriteToStorage = options.writeToStorage ?? true
     const skipReactUpdate = options.skipReactUpdate ?? false
     const savedState = shouldWriteToStorage
-      ? saveState(nextState)
+      ? saveState(nextState, true)
       : cloneState({
           ...nextState,
           lastSavedAt: new Date().toISOString(),

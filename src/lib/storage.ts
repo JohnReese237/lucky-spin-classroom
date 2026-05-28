@@ -69,11 +69,17 @@ export const loadState = (): AppState => {
   }
 }
 
-export const saveState = (state: AppState) => {
-  const nextState = cloneState({
-    ...state,
-    lastSavedAt: new Date().toISOString(),
-  })
+export const saveState = (state: AppState, skipClone = false) => {
+  const nextState = skipClone
+    ? state
+    : cloneState({
+        ...state,
+        lastSavedAt: new Date().toISOString(),
+      })
+
+  if (skipClone) {
+    nextState.lastSavedAt = new Date().toISOString()
+  }
 
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(nextState))

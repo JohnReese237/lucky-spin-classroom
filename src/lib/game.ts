@@ -50,8 +50,16 @@ const makeGroupId = (classIndex: number, groupIndex: number) =>
 export const isGrantReward = (reward: RewardKey): reward is GrantRewardKey =>
   GRANT_REWARD_ORDER.includes(reward as GrantRewardKey)
 
-export const cloneState = <T>(value: T): T =>
-  JSON.parse(JSON.stringify(value)) as T
+export const cloneState = <T>(value: T): T => {
+  if (typeof structuredClone === 'function') {
+    try {
+      return structuredClone(value) as T
+    } catch {
+      // 回退到 JSON 方案
+    }
+  }
+  return JSON.parse(JSON.stringify(value)) as T
+}
 
 export const createInitialClassroom = (
   className: string,
