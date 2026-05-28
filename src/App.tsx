@@ -882,7 +882,9 @@ function App() {
         drawMode,
         activeClassroom.queue.groupIds.length,
       )
+      const MYSTERY_PRIZE_LIMIT = 2
       let highRewardCount = 0
+      let mysteryPrizeCount = 0
       const totalCount = targetStudentIds.length
       const isBatchMode = targetStudentIds.length > 1
 
@@ -895,7 +897,14 @@ function App() {
           continue
         }
 
-        const originalReward = pickWeightedReward(appStateRef.current.settings.probabilityConfig)
+        let originalReward = pickWeightedReward(appStateRef.current.settings.probabilityConfig)
+        if (originalReward === 'mysteryPrize' && mysteryPrizeCount >= MYSTERY_PRIZE_LIMIT) {
+          originalReward = 'common'
+        }
+        if (originalReward === 'mysteryPrize') {
+          mysteryPrizeCount += 1
+        }
+
         const spinMeta: PendingSpin = {
           classId: liveClassroom.id,
           studentId: liveStudent.id,
