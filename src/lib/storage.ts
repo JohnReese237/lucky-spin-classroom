@@ -3,7 +3,6 @@ import {
   DEFAULT_PROBABILITY_CONFIG,
   LEGACY_DEFAULT_PROBABILITY_CONFIG,
   REWARD_ORDER,
-  STORAGE_KEY,
 } from '../constants'
 import { cloneState, createInitialAppState } from './game'
 import type { AppState, ClassroomData, ExportPayloadV1, ProbabilityConfig } from '../types'
@@ -51,43 +50,14 @@ const migrateLegacyDefaultProbabilities = (state: AppState): AppState => {
 const normalizeLoadedState = (state: AppState): AppState =>
   migrateLegacyDefaultProbabilities(normalizeDefaultStudentNames(state))
 
-export const loadState = (): AppState => {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) {
-      return createInitialAppState()
-    }
+export const loadState = (): AppState => createInitialAppState()
 
-    const parsed = JSON.parse(raw) as AppState
-    if (!parsed || parsed.version !== APP_VERSION) {
-      return createInitialAppState()
-    }
-
-    return normalizeLoadedState(parsed)
-  } catch {
-    return createInitialAppState()
-  }
-}
-
-export const saveState = (state: AppState, skipClone = false) => {
-  const nextState = skipClone
-    ? state
-    : cloneState({
-        ...state,
-        lastSavedAt: new Date().toISOString(),
-      })
-
-  if (skipClone) {
-    nextState.lastSavedAt = new Date().toISOString()
+export const saveState = (state: AppState, _skipClone = false) => {
+  if (!state.lastSavedAt) {
+    state.lastSavedAt = new Date().toISOString()
   }
 
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(nextState))
-  } catch (error) {
-    console.warn('幸运大转盘本地保存失败，本次数据仍保留在当前页面内。', error)
-  }
-
-  return nextState
+  return state
 }
 
 export const exportCurrentClass = (

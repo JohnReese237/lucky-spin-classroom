@@ -43,7 +43,6 @@ import {
   exportCurrentClass,
   loadState,
   mergeImportPayload,
-  saveState,
   validateImportPayload,
 } from './lib/storage'
 import type {
@@ -507,30 +506,23 @@ function App() {
 
   const persistState = (
     nextState: AppState,
-    options: { writeToStorage?: boolean; skipReactUpdate?: boolean } = {},
+    options: { skipReactUpdate?: boolean } = {},
   ) => {
-    const shouldWriteToStorage = options.writeToStorage ?? true
     const skipReactUpdate = options.skipReactUpdate ?? false
-    const savedState = shouldWriteToStorage
-      ? saveState(nextState, true)
-      : cloneState({
-          ...nextState,
-          lastSavedAt: new Date().toISOString(),
-        })
-    appStateRef.current = savedState
+    nextState.lastSavedAt = new Date().toISOString()
+    appStateRef.current = nextState
     if (!skipReactUpdate) {
-      setAppState(savedState)
+      setAppState(nextState)
     }
-    return savedState
+    return nextState
   }
 
   const mutateState = (
     recipe: (draft: AppState) => void,
-    options: { writeToStorage?: boolean } = {},
   ) => {
     const draft = cloneState(appStateRef.current)
     recipe(draft)
-    return persistState(draft, options)
+    return persistState(draft)
   }
 
   const resetRuntimeSpinState = () => {
@@ -685,7 +677,6 @@ function App() {
     rerollChoice?: RerollChoice | null
     advanceQueue?: boolean
     keepSpinning?: boolean
-    deferSave?: boolean
     silent?: boolean
     batchSilent?: boolean
   }) => {
@@ -719,10 +710,7 @@ function App() {
       advanceQueue: params.advanceQueue ?? true,
     })
 
-    // 批量抽奖中间结果：只跳过粒子特效，仍更新 UI 以实时出结果
-    persistState(nextState, {
-      writeToStorage: !params.deferSave,
-    })
+    persistState(nextState)
 
     if (params.batchSilent) {
       setPendingSpin(null)
@@ -745,10 +733,10 @@ function App() {
     }
   }
 
-  const clearRoundResultsForBatch = (deferSave = false) => {
+  const clearRoundResultsForBatch = () => {
     mutateState((draft) => {
       draft.classrooms[draft.settings.currentClassId].roundResults = []
-    }, { writeToStorage: !deferSave })
+    })
   }
 
   const resolveAutomaticReward = (originalReward: RewardKey) => {
@@ -885,11 +873,10 @@ function App() {
     spinActiveRef.current = true
     setSpinActive(true)
     setLatestOutcome(null)
-    const deferBatchSave = targetStudentIds.length > 1
 
     try {
       if (drawMode !== 'single') {
-        clearRoundResultsForBatch(deferBatchSave)
+        clearRoundResultsForBatch()
       }
       const highRewardLimit = getRoundHighRewardLimit(
         drawMode,
@@ -897,7 +884,7 @@ function App() {
       )
       let highRewardCount = 0
       const totalCount = targetStudentIds.length
-      const isBatchMode = deferBatchSave
+      const isBatchMode = targetStudentIds.length > 1
 
       for (let index = 0; index < totalCount; index += 1) {
         const studentId = targetStudentIds[index]
@@ -951,7 +938,6 @@ function App() {
           rerollChoice: automaticResolution.rerollChoice,
           advanceQueue: spinMeta.advanceQueue,
           keepSpinning: true,
-          deferSave: deferBatchSave,
           silent: isLast ? false : true,
           batchSilent: isBatchMode && !isLast,
         })
@@ -961,13 +947,7 @@ function App() {
         }
       }
 
-      if (deferBatchSave) {
-        saveState(appStateRef.current)
-      }
     } catch {
-      if (deferBatchSave) {
-        persistState(appStateRef.current)
-      }
       showToast('抽奖中断了，请再点击一次抽奖。', 'warning')
       playSound('error')
     } finally {
@@ -1079,8 +1059,7 @@ function App() {
     mutateState((draft) => {
       draft.settings.currentClassId = classId
       const classroom = draft.classrooms[classId]
-      classroom.queue = buildQueueFromGroupIds(classroom, [])
-      classroom.roundResults = []
+      resetClassRewards(classroom)
       draft.settings.lastSelectedGroupOrder = []
     })
     setProfileStudentId(null)
@@ -1125,8 +1104,8 @@ function App() {
 
     mutateState((draft) => {
       const classroom = draft.classrooms[draft.settings.currentClassId]
+      resetClassRewards(classroom)
       classroom.queue = buildQueueFromGroupIds(classroom, nextSelection)
-      classroom.roundResults = []
       draft.settings.lastSelectedGroupOrder = nextSelection
     })
   }
@@ -1140,8 +1119,9 @@ function App() {
 
     mutateState((draft) => {
       const classroom = draft.classrooms[draft.settings.currentClassId]
-      classroom.queue = buildQueueFromGroupIds(classroom, classroom.queue.groupIds)
-      classroom.roundResults = []
+      const groupIds = classroom.queue.groupIds
+      resetClassRewards(classroom)
+      classroom.queue = buildQueueFromGroupIds(classroom, groupIds)
     })
     setLatestOutcome(null)
   }
@@ -1321,7 +1301,7 @@ function App() {
         if (drawMode === 'single') {
           if (selectedSingleStudentId !== student.id) {
             mutateState((draft) => {
-              draft.classrooms[draft.settings.currentClassId].roundResults = []
+              resetClassRewards(draft.classrooms[draft.settings.currentClassId])
             })
           }
           setSelectedSingleStudentId(student.id)
