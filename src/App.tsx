@@ -1606,25 +1606,23 @@ function App() {
         </section>
 
         <aside className="side-panel right-panel">
-          <section className="panel-card">
-            <div className="section-head">
-              <h2>控制中心</h2>
-              <span>{appState.isPaused ? '已暂停' : '运行中'}</span>
-            </div>
-            <div className="action-grid single-action">
-              <button type="button" className="action-button primary-action" onClick={() => setOpenPanel('settings')}>
-                设置
-              </button>
+          <section className="panel-card control-bar">
+            <div className="control-row">
+              <div className="side-current-card">
+                <span>当前抽奖</span>
+                <strong>{sideCurrentStudentLabel}</strong>
+                {showCurrentStudentProgress ? <em>{currentStudentProgress}</em> : null}
+              </div>
+              <div className="control-actions">
+                <span className="control-status">{appState.isPaused ? '已暂停' : '运行中'}</span>
+                <button type="button" className="action-button primary-action compact-btn" onClick={() => setOpenPanel('settings')}>
+                  设置
+                </button>
+              </div>
             </div>
           </section>
 
           <section className={`panel-card flexible-card side-info-panel mode-${drawMode}`}>
-            <div className="side-current-card">
-              <span>当前抽奖</span>
-              <strong>{sideCurrentStudentLabel}</strong>
-              {showCurrentStudentProgress ? <em>{currentStudentProgress}</em> : null}
-            </div>
-
             {singleDisplayStats ? (
               <div className="side-stats-card">
                 <div className="banner-result-head">

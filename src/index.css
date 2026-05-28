@@ -373,12 +373,12 @@ img {
   gap: 10px;
   padding: 0;
   min-height: 100%;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 .current-student-banner {
@@ -1476,12 +1476,51 @@ img {
   overflow: hidden;
 }
 
+.control-bar {
+  padding: 8px 10px;
+}
+
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+}
+
+.control-row .side-current-card {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.control-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.control-status {
+  font-family: 'Orbitron', 'Rajdhani', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #8defff;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.compact-btn {
+  min-height: 30px;
+  padding: 4px 12px;
+  font-size: 0.78rem;
+  border-radius: 12px;
+}
+
 .side-info-panel {
   display: flex;
   flex-direction: column;
   gap: 8px;
   min-height: 0;
-  padding: 12px;
+  padding: 10px;
 }
 
 .side-current-card,
@@ -1654,6 +1693,7 @@ img {
 }
 
 .mode-single .side-result-groups {
+  flex: 1 1 auto;
   overflow: hidden;
 }
 
@@ -1664,22 +1704,22 @@ img {
 
 .mode-single .side-result-group .banner-result-items {
   display: grid;
-  grid-auto-flow: column;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  grid-template-rows: repeat(5, minmax(28px, max-content));
-  gap: 6px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-auto-rows: minmax(28px, auto);
+  gap: 5px;
   align-content: start;
-  overflow: hidden;
+  overflow: auto;
+  flex: 1 1 auto;
 }
 
 .mode-single .side-result-group .banner-result-card {
   min-width: 0;
   min-height: 28px;
-  padding: 0 6px;
+  padding: 0 5px;
 }
 
 .mode-single .side-result-group .marquee-text {
-  font-size: clamp(0.5rem, 0.54vw, 0.64rem);
+  font-size: clamp(0.48rem, 0.52vw, 0.62rem);
 }
 
 .mode-group .side-result-group {
@@ -1792,12 +1832,12 @@ img {
 }
 
 .spotlight-card {
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 .current-student-banner {
