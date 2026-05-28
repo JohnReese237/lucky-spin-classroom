@@ -1431,7 +1431,6 @@ function App() {
               ) : (
                 visibleStudentGroups.map((group) => (
                   <div className="group-student-block" key={group.id}>
-                    <div className="group-student-head">{group.name}</div>
                     <div className="student-chip-wrap">
                       {group.studentIds.map((studentId) =>
                         renderStudentCard(currentClassroom.students[studentId]),
