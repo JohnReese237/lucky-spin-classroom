@@ -11,6 +11,7 @@ import {
   PERSONAL_CAPS,
   REWARD_META,
   REWARD_ORDER,
+  SINGLE_RESULT_LIMIT,
   STUDENTS_PER_GROUP,
 } from '../constants'
 import type {
@@ -371,7 +372,7 @@ const appendRoundResult = (
     finalReward: record.finalReward,
   }
 
-  classroom.roundResults = [...classroom.roundResults, resultCard]
+  classroom.roundResults = [...classroom.roundResults, resultCard].slice(-SINGLE_RESULT_LIMIT)
 }
 
 export const applySpinToClassroom = (params: {

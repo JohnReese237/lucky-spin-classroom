@@ -11,7 +11,8 @@ export const APP_VERSION = '1.0.0'
 export const CLASS_NAMES = Array.from({ length: 8 }, (_, index) => `2.${index + 1} 班`)
 export const GROUP_COUNT = 8
 export const STUDENTS_PER_GROUP = 6
-export const MAX_QUEUE_GROUPS = 4
+export const MAX_QUEUE_GROUPS = 2
+export const SINGLE_RESULT_LIMIT = 20
 
 export const REWARD_ORDER: RewardKey[] = [
   'common',

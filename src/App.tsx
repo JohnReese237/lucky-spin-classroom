@@ -13,6 +13,7 @@ import {
   MYSTERY_PRIZE_POOL,
   REWARD_META,
   REWARD_ORDER,
+  SINGLE_RESULT_LIMIT,
   SPIN_SEGMENT_ANGLE,
   WHEEL_POINTER_ANGLE,
   getRewardSegmentCenter,
@@ -119,7 +120,6 @@ const appStageBackground = stageBackground
 const AUTO_SPIN_RESULT_PAUSE_MS = 1000
 const GREEN_REWARD_MIN_RANK = REWARD_META.rare.rank
 const HIGH_REWARD_FALLBACK: RewardKey = 'excellent'
-const SINGLE_RESULT_LIMIT = 20
 
 const createEmptyRewardCounts = () =>
   GRANT_REWARD_ORDER.reduce<Record<GrantRewardKey, number>>((counts, reward) => {
@@ -1319,6 +1319,11 @@ function App() {
       }`}
       onClick={() => {
         if (drawMode === 'single') {
+          if (selectedSingleStudentId !== student.id) {
+            mutateState((draft) => {
+              draft.classrooms[draft.settings.currentClassId].roundResults = []
+            })
+          }
           setSelectedSingleStudentId(student.id)
           setSingleGroupFilterId(student.groupId)
           setProfileStudentId(null)
