@@ -49,6 +49,7 @@ import type {
   AppState,
   MysteryPrizeOutcome,
   QueueProgress,
+  GrantRewardKey,
   RewardKey,
   RerollChoice,
   RoundResultCard,
@@ -67,6 +68,14 @@ interface PendingSpin {
   studentName: string
   originalReward: RewardKey
   advanceQueue: boolean
+}
+
+interface SideResultGroup {
+  slotId: string
+  groupId: string | null
+  groupName: string
+  results: RoundResultCard[]
+  waitingLabel: string
 }
 
 interface ToastState {
@@ -110,6 +119,25 @@ const appStageBackground = stageBackground
 const AUTO_SPIN_RESULT_PAUSE_MS = 1000
 const GREEN_REWARD_MIN_RANK = REWARD_META.rare.rank
 const HIGH_REWARD_FALLBACK: RewardKey = 'excellent'
+const SINGLE_RESULT_LIMIT = 20
+
+const createEmptyRewardCounts = () =>
+  GRANT_REWARD_ORDER.reduce<Record<GrantRewardKey, number>>((counts, reward) => {
+    counts[reward] = 0
+    return counts
+  }, {} as Record<GrantRewardKey, number>)
+
+const getFallbackStickerDelta = (reward: RewardKey) => {
+  if (reward === 'common') {
+    return 1
+  }
+
+  if (reward === 'excellent') {
+    return 2
+  }
+
+  return 0
+}
 
 const wait = (duration: number) =>
   new Promise((resolve) => window.setTimeout(resolve, duration))
@@ -154,25 +182,15 @@ const isGreenOrAboveReward = (reward: RewardKey) =>
 const getRoundHighRewardLimit = (mode: DrawMode, groupCount: number) =>
   mode === 'multiGroup' ? Math.min(MAX_QUEUE_GROUPS, Math.max(1, groupCount)) : 1
 
-const renderCurrentStudentLabel = (
-  student: StudentProfile | null,
-  mode: DrawMode,
-) => {
-  if (student) {
-    return student.name
-  }
-
-  if (mode === 'single') {
-    return '等待选择学生'
-  }
-
-  return (
-    <>
-      等待
-      <br />
-      选择小组
-    </>
-  )
+const REWARD_COUNT_LABELS: Record<GrantRewardKey, string> = {
+  common: '灰白',
+  excellent: '蓝色',
+  rare: '绿色',
+  epic: '粉色',
+  mythic: '红色',
+  limited: '橙色',
+  eternal: '金色',
+  supreme: '白色',
 }
 
 const toDisplayProgress = (progress: QueueProgress | null) => {
@@ -199,15 +217,46 @@ const DRAW_MODE_META: Record<DrawMode, { label: string; hint: string }> = {
 }
 
 function ResultMarquee({ text }: { text: string }) {
+  const containerRef = useRef<HTMLSpanElement>(null)
+  const segmentRef = useRef<HTMLSpanElement>(null)
+  const [scrolling, setScrolling] = useState(false)
+
+  useEffect(() => {
+    const container = containerRef.current
+    const segment = segmentRef.current
+    if (!container || !segment) {
+      return undefined
+    }
+
+    const updateScrolling = () => {
+      setScrolling(segment.scrollWidth > container.clientWidth + 2)
+    }
+
+    updateScrolling()
+
+    const resizeObserver =
+      typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(updateScrolling)
+    resizeObserver?.observe(container)
+    resizeObserver?.observe(segment)
+    window.addEventListener('resize', updateScrolling)
+
+    return () => {
+      resizeObserver?.disconnect()
+      window.removeEventListener('resize', updateScrolling)
+    }
+  }, [text])
+
   return (
-    <span className="marquee-text scrolling">
+    <span className={`marquee-text ${scrolling ? 'scrolling' : ''}`} ref={containerRef}>
       <span className="marquee-track">
-        <span className="marquee-segment">
+        <span className="marquee-segment" ref={segmentRef}>
           <span>{text}</span>
         </span>
-        <span className="marquee-segment" aria-hidden="true">
-          <span>{text}</span>
-        </span>
+        {scrolling ? (
+          <span className="marquee-segment" aria-hidden="true">
+            <span>{text}</span>
+          </span>
+        ) : null}
       </span>
     </span>
   )
@@ -230,6 +279,7 @@ function App() {
   const [mysteryModal, setMysteryModal] = useState<MysteryModalState | null>(null)
   const [activeBurst, setActiveBurst] = useState<EffectBurst | null>(null)
   const [comboCount, setComboCount] = useState(1)
+  const [completionBanner, setCompletionBanner] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const wheelShellRef = useRef<HTMLDivElement | null>(null)
   const audioRef = useRef(new LuckySpinAudio())
@@ -258,6 +308,15 @@ function App() {
     const timer = window.setTimeout(() => setToast(null), 2800)
     return () => window.clearTimeout(timer)
   }, [toast])
+
+  useEffect(() => {
+    if (!completionBanner) {
+      return
+    }
+
+    const timer = window.setTimeout(() => setCompletionBanner(null), 3200)
+    return () => window.clearTimeout(timer)
+  }, [completionBanner])
 
   useEffect(() => {
     return () => {
@@ -310,6 +369,11 @@ function App() {
         ? `单人抽奖  ${currentStudent.name}`
         : '请选择一名学生'
       : toDisplayProgress(queueProgress)
+  const sideCurrentStudentLabel = currentStudent
+    ? currentStudent.name
+    : drawMode === 'single'
+      ? '等待选择学生'
+      : '等待选择小组'
   const showCurrentStudentProgress =
     currentStudentProgress !== '请选择一名学生' &&
     currentStudentProgress !== '等待选择小组'
@@ -343,6 +407,77 @@ function App() {
     }
 
     return Array.from(groupRows.values())
+  })()
+  const sideResultGroups = (() => {
+    const resultRows = new Map(roundResultGroups.map((group) => [group.groupId, group]))
+
+    const makeGroupSlot = (groupId: string): SideResultGroup => {
+      const group = currentClassroom.groups.find((item) => item.id === groupId)
+      const resultGroup = resultRows.get(groupId)
+
+      return {
+        slotId: groupId,
+        groupId,
+        groupName: group?.name ?? resultGroup?.groupName ?? '未分组',
+        results:
+          drawMode === 'single'
+            ? (resultGroup?.results ?? []).slice(-SINGLE_RESULT_LIMIT)
+            : resultGroup?.results ?? [],
+        waitingLabel: '等待结果',
+      }
+    }
+
+    if (drawMode === 'single') {
+      if (!singleGroupFilterId) {
+        return [
+          {
+            slotId: 'single-waiting',
+            groupId: null,
+            groupName: '请选择小组',
+            results: [],
+            waitingLabel: '选择小组筛选后显示结果',
+          },
+        ]
+      }
+
+      return [makeGroupSlot(singleGroupFilterId)]
+    }
+
+    return currentClassroom.queue.groupIds
+      .slice(0, MAX_QUEUE_GROUPS)
+      .map((groupId) => makeGroupSlot(groupId))
+  })()
+  const singleStatsStudent =
+    drawMode === 'single'
+      ? currentStudent ??
+        (latestOutcome ? currentClassroom.students[latestOutcome.record.studentId] ?? null : null)
+      : null
+  const singleDisplayStats = (() => {
+    if (drawMode !== 'single' || !singleStatsStudent) {
+      return null
+    }
+
+    const resultWindow = currentClassroom.roundResults
+      .filter((result) => result.studentId === singleStatsStudent.id)
+      .slice(-SINGLE_RESULT_LIMIT)
+    const historyById = new Map(currentClassroom.history.map((record) => [record.id, record]))
+    const rewardCounts = createEmptyRewardCounts()
+    let stickerCount = 0
+
+    for (const result of resultWindow) {
+      const record = historyById.get(result.recordId)
+      stickerCount += record?.stickerDelta ?? getFallbackStickerDelta(result.finalReward)
+
+      if (isGrantReward(result.finalReward)) {
+        rewardCounts[result.finalReward] += 1
+      }
+    }
+
+    return {
+      totalSpins: resultWindow.length,
+      stickerCount,
+      rewardCounts,
+    }
   })()
 
   const showToast = (message: string, tone: ToastTone = 'info') => {
@@ -580,6 +715,10 @@ function App() {
           ]
 
     const nextClassroom = nextState.classrooms[params.classId]
+    if (params.advanceQueue === false && nextClassroom.roundResults.length >= SINGLE_RESULT_LIMIT) {
+      nextClassroom.roundResults = []
+    }
+
     const outcome = applySpinToClassroom({
       classroom: nextClassroom,
       studentId: params.studentId,
@@ -767,10 +906,13 @@ function App() {
     spinActiveRef.current = true
     setSpinActive(true)
     setLatestOutcome(null)
-    const deferBatchSave = drawMode !== 'single' && targetStudentIds.length > 1
+    setCompletionBanner(null)
+    const deferBatchSave = targetStudentIds.length > 1
 
     try {
-      clearRoundResultsForBatch(deferBatchSave)
+      if (drawMode !== 'single') {
+        clearRoundResultsForBatch(deferBatchSave)
+      }
       const highRewardLimit = getRoundHighRewardLimit(
         drawMode,
         activeClassroom.queue.groupIds.length,
@@ -844,7 +986,7 @@ function App() {
       if (deferBatchSave) {
         saveState(appStateRef.current)
       }
-      showToast(`本次已自动完成 ${totalCount} 位学生抽奖。`, 'success')
+      setCompletionBanner(`本次已自动完成 ${totalCount} 位学生抽奖`)
     } catch {
       if (deferBatchSave) {
         persistState(appStateRef.current)
@@ -854,6 +996,8 @@ function App() {
     } finally {
       spinActiveRef.current = false
       setPendingSpin(null)
+      setRerollChoicePending(null)
+      setMysteryModal(null)
       setSpinActive(false)
     }
   }
@@ -932,10 +1076,17 @@ function App() {
     setProfileStudentId(null)
     setComboCount(1)
 
-    if (nextMode === 'group' && currentClassroom.queue.groupIds.length > 1) {
+    if (
+      (nextMode === 'group' && currentClassroom.queue.groupIds.length > 1) ||
+      (nextMode === 'multiGroup' && currentClassroom.queue.groupIds.length > MAX_QUEUE_GROUPS)
+    ) {
       mutateState((draft) => {
         const classroom = draft.classrooms[draft.settings.currentClassId]
-        classroom.queue = buildQueueFromGroupIds(classroom, [classroom.queue.groupIds[0]])
+        const nextGroupIds =
+          nextMode === 'group'
+            ? classroom.queue.groupIds.slice(0, 1)
+            : classroom.queue.groupIds.slice(0, MAX_QUEUE_GROUPS)
+        classroom.queue = buildQueueFromGroupIds(classroom, nextGroupIds)
         classroom.roundResults = []
         draft.settings.lastSelectedGroupOrder = classroom.queue.groupIds
       })
@@ -1330,58 +1481,9 @@ function App() {
 
         <section className="center-stage">
           <div className="stage-card spotlight-card">
-            <div className="current-student-banner">
-              <div className="marquee-lights" />
-              <div className="current-student-copy">
-                <span>当前抽奖学生</span>
-                <strong>
-                  {renderCurrentStudentLabel(currentStudent, drawMode)}
-                </strong>
-                {showCurrentStudentProgress ? <em>{currentStudentProgress}</em> : null}
-              </div>
-              <div className="banner-result-panel">
-                <div className="result-starfield" aria-hidden="true" />
-                <div className="result-orbit-lights" aria-hidden="true">
-                  <i><span /><span /><span /><span /><span /><span /><span /></i>
-                  <i><span /><span /><span /><span /><span /><span /><span /></i>
-                </div>
-                <div className="banner-result-head">
-                  <span>本轮抽奖结果</span>
-                  <strong>{roundResultCount} 条</strong>
-                </div>
-                <div className="banner-result-list">
-                  {roundResultCount === 0 ? (
-                    <div className="banner-result-empty">等待结果</div>
-                  ) : (
-                    roundResultGroups.map((group) => (
-                      <div className="banner-result-row" key={group.groupId}>
-                        <span className="banner-result-group">{group.groupName}</span>
-                        <div className="banner-result-items">
-                          {group.results.length === 0 ? (
-                            <span className="banner-result-waiting">等待</span>
-                          ) : (
-                            group.results.map((result) => {
-                              const resultText = `${result.studentName}-${result.detailText}`
-
-                              return (
-                                <article
-                                  className={`banner-result-card reward-${result.finalReward}`}
-                                  key={result.recordId}
-                                  title={resultText}
-                                >
-                                  <ResultMarquee text={resultText} />
-                                </article>
-                              )
-                            })
-                          )}
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            </div>
-
+            {completionBanner ? (
+              <div className="completion-banner">{completionBanner}</div>
+            ) : null}
             <div className={`wheel-stage ${spinActive ? 'spinning' : ''}`}>
               <div className="wheel-light-frame">
                 <div
@@ -1531,6 +1633,70 @@ function App() {
               <button type="button" className="action-button primary-action" onClick={() => setOpenPanel('settings')}>
                 设置
               </button>
+            </div>
+          </section>
+
+          <section className={`panel-card flexible-card side-info-panel mode-${drawMode}`}>
+            <div className="side-current-card">
+              <span>当前抽奖</span>
+              <strong>{sideCurrentStudentLabel}</strong>
+              {showCurrentStudentProgress ? <em>{currentStudentProgress}</em> : null}
+            </div>
+
+            {singleDisplayStats ? (
+              <div className="side-stats-card">
+                <div className="banner-result-head">
+                  <span>单人累计统计</span>
+                  <strong>{singleDisplayStats.totalSpins} 次</strong>
+                </div>
+                <div className="side-stats-grid">
+                  <span className="side-stat-pill sticker-stat">
+                    贴纸 <strong>{singleDisplayStats.stickerCount}</strong>
+                  </span>
+                  {GRANT_REWARD_ORDER.map((reward) => (
+                    <span key={reward} className={`side-stat-pill reward-${reward}`}>
+                      {REWARD_COUNT_LABELS[reward]} <strong>{singleDisplayStats.rewardCounts[reward]}</strong>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            <div className="banner-result-panel side-result-panel">
+              <div className="result-starfield" aria-hidden="true" />
+              <div className="banner-result-head">
+                <span>本轮抽奖结果</span>
+                <strong>{roundResultCount} 条</strong>
+              </div>
+              <div className="side-result-groups">
+                {sideResultGroups.map((group) => (
+                  <div
+                    className={`banner-result-row side-result-group ${group.groupId ? '' : 'placeholder'}`}
+                    key={group.slotId}
+                  >
+                    <span className="banner-result-group">{group.groupName}</span>
+                    <div className="banner-result-items">
+                      {group.results.length === 0 ? (
+                        <span className="banner-result-waiting">{group.waitingLabel}</span>
+                      ) : (
+                        group.results.map((result) => {
+                          const resultText = `${result.studentName}-${result.detailText}`
+
+                          return (
+                            <article
+                              className={`banner-result-card reward-${result.finalReward}`}
+                              key={result.recordId}
+                              title={resultText}
+                            >
+                              <ResultMarquee text={resultText} />
+                            </article>
+                          )
+                        })
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
         </aside>
