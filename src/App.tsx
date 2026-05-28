@@ -1610,15 +1610,11 @@ function App() {
             <div className="control-row">
               <div className="side-current-card">
                 <span>当前抽奖</span>
-                <strong>{sideCurrentStudentLabel}</strong>
-                {showCurrentStudentProgress ? <em>{currentStudentProgress}</em> : null}
+                <ResultMarquee text={showCurrentStudentProgress ? `${sideCurrentStudentLabel} - ${currentStudentProgress}` : sideCurrentStudentLabel} />
               </div>
-              <div className="control-actions">
-                <span className="control-status">{appState.isPaused ? '已暂停' : '运行中'}</span>
-                <button type="button" className="action-button primary-action compact-btn" onClick={() => setOpenPanel('settings')}>
-                  设置
-                </button>
-              </div>
+              <button type="button" className="action-button primary-action compact-btn" onClick={() => setOpenPanel('settings')}>
+                设置
+              </button>
             </div>
           </section>
 

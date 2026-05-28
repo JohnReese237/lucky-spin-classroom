@@ -1483,32 +1483,34 @@ img {
 .control-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   min-height: 42px;
 }
 
 .control-row .side-current-card {
   flex: 1 1 auto;
   min-width: 0;
-}
-
-.control-actions {
-  flex: 0 0 auto;
   display: flex;
   align-items: center;
   gap: 8px;
+  overflow: hidden;
 }
 
-.control-status {
+.control-row .side-current-card span {
+  flex: 0 0 auto;
   font-family: 'Orbitron', 'Rajdhani', sans-serif;
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: #8defff;
-  letter-spacing: 0.08em;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #b0f0ff;
   white-space: nowrap;
 }
 
+.control-row .side-current-card .marquee-text {
+  font-size: 0.82rem;
+}
+
 .compact-btn {
+  flex: 0 0 auto;
   min-height: 30px;
   padding: 4px 12px;
   font-size: 0.78rem;
