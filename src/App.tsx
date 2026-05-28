@@ -753,16 +753,6 @@ function App() {
     if (params.silent) {
       return
     }
-
-    if (
-      (params.advanceQueue ?? true) &&
-      outcome.classroom.queue.currentIndex >= outcome.classroom.queue.studentIds.length &&
-      outcome.classroom.queue.studentIds.length > 0
-    ) {
-      showToast('本轮抽奖已全部完成，可以重启当前队列继续。', 'success')
-    } else {
-      showToast(`${outcome.record.studentName} 获得 ${REWARD_META[outcome.record.finalReward].label}`, 'success')
-    }
   }
 
   const clearRoundResultsForBatch = (deferSave = false) => {
@@ -891,7 +881,6 @@ function App() {
     if (targetStudentIds.length === 0) {
       const restartedState = drawMode === 'single' ? null : restartSelectedQueueForNextRun()
       if (!restartedState) {
-        showToast('本轮队列已经完成，请重新选择学生或小组。', 'success')
         playSound('error')
         return
       }
@@ -1167,7 +1156,6 @@ function App() {
       classroom.roundResults = []
     })
     setLatestOutcome(null)
-    showToast('当前队列已重启。', 'success')
   }
 
   const saveNow = () => {
