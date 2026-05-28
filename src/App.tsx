@@ -1445,7 +1445,7 @@ function App() {
         </aside>
 
         <section className="center-stage">
-          <div className="stage-card spotlight-card">
+          <div className="stage-card spotlight-card" style={{ background: 'transparent', border: 'none', boxShadow: 'none', backdropFilter: 'none', WebkitBackdropFilter: 'none', borderRadius: 0 }}>
             <div className={`wheel-stage ${spinActive ? 'spinning' : ''}`}>
               <div className="wheel-light-frame">
                 <div
