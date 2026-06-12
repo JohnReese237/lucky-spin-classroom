@@ -2708,3 +2708,488 @@ img {
     font-size: 0.78rem;
   }
 }
+
+/* Mobile-first single-player layout */
+@media (min-width: 761px) {
+  body {
+    min-width: 1024px;
+    overflow: auto;
+  }
+}
+
+@media (max-width: 760px) {
+  html,
+  body,
+  #root {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  body {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  /* ===== Kill all backdrop-filter on mobile (massive GPU savings) ===== */
+  .app-shell,
+  .panel-card,
+  .stage-card,
+  .modal,
+  .current-student-banner,
+  .side-current-card,
+  .side-stats-card,
+  .side-result-group,
+  .result-announcer,
+  .round-results,
+  .group-student-block,
+  .queue-item,
+  .history-list li,
+  .stats-mini-grid article,
+  .profile-summary-grid article,
+  .stats-large-grid article,
+  .settings-section,
+  .stats-section,
+  .banner-result-panel,
+  .spotlight-card,
+  .overlay,
+  .wheel-light-frame {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* ===== Disable expensive CSS animations on mobile ===== */
+  .wheel-sparkles,
+  .wheel-orbit-lines,
+  .result-starfield {
+    display: none !important;
+  }
+
+  .marquee-text.scrolling .marquee-track {
+    animation: none;
+  }
+
+  .app-shell {
+    width: 100%;
+    min-width: 0;
+    height: 100dvh;
+    min-height: 100dvh;
+    padding: max(6px, env(safe-area-inset-top)) 8px max(6px, env(safe-area-inset-bottom));
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-attachment: scroll;
+  }
+
+  .top-title {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 100%;
+    align-items: center;
+    margin-bottom: 4px;
+    padding: 0 4px;
+  }
+
+  .eyebrow {
+    font-size: 0.58rem;
+    letter-spacing: 0.14em;
+    margin-bottom: 0;
+  }
+
+  .top-title h1 {
+    font-size: clamp(1.4rem, 5.5vw, 2rem);
+    letter-spacing: 0;
+    -webkit-text-stroke-width: 0.5px;
+  }
+
+  .version-badge {
+    flex: 0 0 auto;
+    padding: 5px 8px;
+    font-size: 0.6rem;
+  }
+
+  .mobile-layout {
+    position: relative;
+    z-index: 2;
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .mobile-layout .panel-card,
+  .mobile-layout .stage-card {
+    border-radius: 16px;
+  }
+
+  .student-switch-card {
+    flex: 0 0 auto;
+    padding: 6px 8px;
+  }
+
+  .student-switch-main {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) 36px;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .student-nav-button {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 999px;
+    color: #04101f;
+    background: linear-gradient(180deg, #ffdf6c, #ff9f2e);
+    box-shadow: 0 8px 16px rgba(255, 159, 46, 0.24);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3rem;
+    line-height: 1;
+    display: grid;
+    place-items: center;
+    padding: 0;
+  }
+
+  .student-nav-button:disabled {
+    opacity: 0.45;
+  }
+
+  .student-switch-copy {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    text-align: center;
+  }
+
+  .student-switch-copy span,
+  .student-switch-copy em {
+    color: #9ab6d1;
+    font-family: 'Rajdhani', 'Noto Sans SC', sans-serif;
+    font-size: 0.65rem;
+    font-style: normal;
+  }
+
+  .student-switch-copy strong {
+    min-width: 0;
+    color: #ffffff;
+    font-family: 'ZCOOL KuaiLe', 'Noto Sans SC', sans-serif;
+    font-size: clamp(1.1rem, 5vw, 1.5rem);
+    line-height: 1.08;
+    overflow-wrap: anywhere;
+  }
+
+  .mobile-layout .center-stage {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .mobile-layout .spotlight-card {
+    height: 100%;
+    gap: 4px;
+    min-height: 0;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .mobile-layout .current-student-banner {
+    display: none;
+  }
+
+  .mobile-layout .wheel-stage {
+    flex: 1 1 auto;
+    min-height: 0;
+    gap: 4px;
+    --wheel-stage-visual-offset-x: 0px;
+    padding-top: 0;
+    justify-content: center;
+  }
+
+  .mobile-layout .wheel-light-frame,
+  .mobile-layout .wheel-shell {
+    width: min(100%, 340px);
+  }
+
+  .mobile-layout .wheel-shell {
+    width: min(calc(100vw - 32px), 300px);
+    min-width: 0;
+    max-width: min(calc(100vw - 32px), 300px);
+  }
+
+  .mobile-layout .wheel-label {
+    padding-top: 14%;
+  }
+
+  .mobile-layout .wheel-label span {
+    min-width: 0;
+    padding: 3px 4px;
+    font-size: 0.5rem;
+  }
+
+  .mobile-layout .spin-row {
+    flex: 0 0 auto;
+    width: 100%;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 0;
+  }
+
+  .mobile-layout .combo-selector {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 4px;
+    align-items: center;
+  }
+
+  .mobile-layout .combo-label {
+    display: none;
+  }
+
+  .mobile-layout .combo-chip {
+    min-width: 0;
+    min-height: 30px;
+    padding: 4px 2px;
+    border-radius: 10px;
+    white-space: nowrap;
+    font-size: 0.68rem;
+  }
+
+  .mobile-layout .spin-button {
+    width: min(100%, 280px);
+    min-width: 0;
+    min-height: 44px;
+    margin-top: 0;
+    padding: 8px 18px;
+  }
+
+  .mobile-layout .spin-button span {
+    font-size: 1rem;
+  }
+
+  .mobile-layout .compact-announcer {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .mobile-layout .result-announcer {
+    gap: 6px;
+    border-radius: 12px;
+    flex-direction: column;
+    padding: 8px 10px;
+  }
+
+  .mobile-layout .reward-pill {
+    flex: 0 0 auto;
+    padding: 6px 10px;
+    font-size: 0.78rem;
+  }
+
+  .mobile-layout .result-announcer-copy strong {
+    font-size: 0.9rem;
+  }
+
+  .mobile-layout .result-announcer-copy span,
+  .mobile-layout .result-announcer-copy em {
+    font-size: 0.72rem;
+  }
+
+  .mobile-banner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 30;
+    padding: 12px 24px;
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(255, 203, 77, 0.95), rgba(255, 75, 152, 0.92));
+    color: #1a0510;
+    font-family: 'Orbitron', 'Rajdhani', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-align: center;
+    box-shadow: 0 12px 32px rgba(255, 74, 144, 0.3);
+    pointer-events: none;
+    animation: mobile-banner-pop 0.3s ease-out;
+  }
+
+  @keyframes mobile-banner-pop {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  }
+
+  .mobile-result-panel {
+    flex: 0 0 auto;
+    display: flex;
+  }
+
+  .mobile-result-panel .banner-result-head {
+    font-size: 0.7rem;
+  }
+
+  .mobile-result-panel .banner-result-list {
+    height: auto;
+    max-height: 52px;
+    min-height: 32px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .mobile-result-panel .banner-result-card {
+    min-height: 26px;
+    padding: 0 6px;
+    border-radius: 8px;
+  }
+
+  .mobile-result-panel .marquee-text {
+    font-size: 0.6rem;
+  }
+
+  .control-card {
+    flex: 0 0 auto;
+    padding: 6px 8px;
+  }
+
+  .control-card .section-head {
+    margin-bottom: 4px;
+  }
+
+  .control-card .section-head h2 {
+    font-size: 0.82rem;
+  }
+
+  .control-card .section-head span {
+    font-size: 0.68rem;
+  }
+
+  .control-card .primary-action {
+    width: 100%;
+    min-height: 38px;
+    font-size: 0.88rem;
+    padding: 8px;
+  }
+
+  .panel-card {
+    padding: 8px;
+  }
+
+  .section-head {
+    align-items: flex-end;
+    margin-bottom: 6px;
+  }
+
+  .section-head h2 {
+    font-size: 0.85rem;
+  }
+
+  .section-head span {
+    font-size: 0.7rem;
+  }
+
+  .settings-modal {
+    width: min(460px, 100%);
+  }
+
+  .mobile-settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mobile-settings-grid .control-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .toggle-stack {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .overlay {
+    padding: 12px;
+    align-items: start;
+    overflow: auto;
+  }
+
+  .modal {
+    max-height: calc(100dvh - 24px);
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .modal-head {
+    margin-bottom: 14px;
+    padding-right: 44px;
+  }
+
+  .choice-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Reduce wheel pointer jitter on mobile */
+  .wheel-pointer.jitter {
+    animation-duration: 0.3s;
+  }
+
+  /* Kill spin button pulse on mobile */
+  .spin-button.busy {
+    animation: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .top-title h1 {
+    font-size: 1.2rem;
+  }
+
+  .student-switch-main {
+    grid-template-columns: 32px minmax(0, 1fr) 32px;
+    gap: 6px;
+  }
+
+  .student-nav-button {
+    width: 32px;
+    height: 32px;
+    font-size: 1.1rem;
+  }
+
+  .mobile-layout .wheel-shell {
+    width: min(calc(100vw - 28px), 260px);
+    max-width: min(calc(100vw - 28px), 260px);
+  }
+
+  .mobile-layout .wheel-label span {
+    min-width: 36px;
+    font-size: 0.45rem;
+    padding: 2px 3px;
+  }
+
+  .mobile-layout .combo-chip {
+    min-height: 26px;
+    font-size: 0.62rem;
+    padding: 3px 2px;
+  }
+
+  .mobile-layout .spin-button {
+    min-height: 38px;
+  }
+
+  .mobile-layout .spin-button span {
+    font-size: 0.88rem;
+  }
+}

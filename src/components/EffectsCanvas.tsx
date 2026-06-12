@@ -55,7 +55,7 @@ const createParticles = (
 ) => {
   const theme = burst.theme
   const ringMode = burst.mode === 'wheelRing'
-  const count = lowPerformanceMode ? 18 : theme === 'supreme' ? 56 : 36
+  const count = lowPerformanceMode ? 12 : theme === 'supreme' ? 28 : 20
   const colors = THEME_COLORS[theme]
   const centerX = burst.origin?.x ?? width / 2
   const centerY = burst.origin?.y ?? height * 0.42
