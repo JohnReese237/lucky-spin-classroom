@@ -2788,7 +2788,8 @@ img {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center;
+    align-items: center;
     background-attachment: scroll;
   }
 
@@ -2797,69 +2798,70 @@ img {
     width: 100%;
     max-width: 100%;
     align-items: center;
-    margin-bottom: 4px;
+    justify-content: center;
+    margin-bottom: 2px;
     padding: 0 4px;
   }
 
-  .eyebrow {
-    font-size: 0.58rem;
-    letter-spacing: 0.14em;
-    margin-bottom: 0;
-  }
-
   .top-title h1 {
-    font-size: clamp(1.4rem, 5.5vw, 2rem);
+    font-size: clamp(1.2rem, 5vw, 1.7rem);
     letter-spacing: 0;
     -webkit-text-stroke-width: 0.5px;
   }
 
+  .eyebrow {
+    font-size: 0.55rem;
+    letter-spacing: 0.12em;
+    margin-bottom: 0;
+  }
+
   .version-badge {
     flex: 0 0 auto;
-    padding: 5px 8px;
-    font-size: 0.6rem;
+    padding: 4px 7px;
+    font-size: 0.55rem;
   }
 
   .mobile-layout {
     position: relative;
     z-index: 2;
-    flex: 1 1 auto;
+    flex: 0 1 auto;
     width: 100%;
     max-width: 100%;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
     min-height: 0;
     overflow: hidden;
   }
 
   .mobile-layout .panel-card,
   .mobile-layout .stage-card {
-    border-radius: 16px;
+    border-radius: 14px;
   }
 
   .student-switch-card {
     flex: 0 0 auto;
-    padding: 6px 8px;
+    padding: 5px 8px;
   }
 
   .student-switch-main {
     display: grid;
-    grid-template-columns: 36px minmax(0, 1fr) 36px;
-    gap: 8px;
+    grid-template-columns: 32px minmax(0, 1fr) 32px;
+    gap: 6px;
     align-items: center;
   }
 
   .student-nav-button {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border: 0;
     border-radius: 999px;
     color: #04101f;
     background: linear-gradient(180deg, #ffdf6c, #ff9f2e);
-    box-shadow: 0 8px 16px rgba(255, 159, 46, 0.24);
+    box-shadow: 0 6px 12px rgba(255, 159, 46, 0.2);
     font-family: 'Orbitron', sans-serif;
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     line-height: 1;
     display: grid;
     place-items: center;
@@ -2882,7 +2884,7 @@ img {
   .student-switch-copy em {
     color: #9ab6d1;
     font-family: 'Rajdhani', 'Noto Sans SC', sans-serif;
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     font-style: normal;
   }
 
@@ -2890,7 +2892,7 @@ img {
     min-width: 0;
     color: #ffffff;
     font-family: 'ZCOOL KuaiLe', 'Noto Sans SC', sans-serif;
-    font-size: clamp(1.1rem, 5vw, 1.5rem);
+    font-size: clamp(1rem, 4.5vw, 1.3rem);
     line-height: 1.08;
     overflow-wrap: anywhere;
   }
@@ -2903,11 +2905,12 @@ img {
 
   .mobile-layout .spotlight-card {
     height: 100%;
-    gap: 4px;
+    gap: 3px;
     min-height: 0;
-    padding: 6px;
+    padding: 4px;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     overflow: hidden;
   }
 
@@ -2918,22 +2921,22 @@ img {
   .mobile-layout .wheel-stage {
     flex: 1 1 auto;
     min-height: 0;
-    gap: 4px;
+    gap: 2px;
     --wheel-stage-visual-offset-x: 0px;
-    transform: none;
+    transform: none !important;
     padding-top: 0;
     justify-content: center;
     align-items: center;
   }
 
   .mobile-layout .wheel-light-frame {
-    width: min(95%, 320px);
+    width: min(90%, 300px);
     margin: 0 auto;
   }
 
   .mobile-layout .wheel-shell {
     width: 100%;
-    max-width: 320px;
+    max-width: 300px;
     min-width: 0;
     margin: 0 auto;
     contain: paint;
@@ -2951,15 +2954,15 @@ img {
 
   .mobile-layout .wheel-label span {
     min-width: 0;
-    padding: 3px 4px;
-    font-size: 0.5rem;
+    padding: 2px 3px;
+    font-size: 0.48rem;
   }
 
   .mobile-layout .spin-row {
     flex: 0 0 auto;
     width: 100%;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
     margin-top: 0;
   }
 
@@ -2967,7 +2970,7 @@ img {
     width: 100%;
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 4px;
+    gap: 3px;
     align-items: center;
   }
 
@@ -2977,23 +2980,23 @@ img {
 
   .mobile-layout .combo-chip {
     min-width: 0;
-    min-height: 30px;
-    padding: 4px 2px;
-    border-radius: 10px;
+    min-height: 28px;
+    padding: 3px 2px;
+    border-radius: 9px;
     white-space: nowrap;
-    font-size: 0.68rem;
+    font-size: 0.64rem;
   }
 
   .mobile-layout .spin-button {
-    width: min(100%, 280px);
+    width: min(100%, 260px);
     min-width: 0;
-    min-height: 44px;
+    min-height: 40px;
     margin-top: 0;
-    padding: 8px 18px;
+    padding: 6px 16px;
   }
 
   .mobile-layout .spin-button span {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
 
   .mobile-layout .compact-announcer {
@@ -3003,39 +3006,39 @@ img {
   }
 
   .mobile-layout .result-announcer {
-    gap: 6px;
-    border-radius: 12px;
+    gap: 5px;
+    border-radius: 10px;
     flex-direction: column;
-    padding: 8px 10px;
+    padding: 6px 8px;
   }
 
   .mobile-layout .reward-pill {
     flex: 0 0 auto;
-    padding: 6px 10px;
-    font-size: 0.78rem;
+    padding: 5px 8px;
+    font-size: 0.72rem;
   }
 
   .mobile-layout .result-announcer-copy strong {
-    font-size: 0.9rem;
+    font-size: 0.82rem;
   }
 
   .mobile-layout .result-announcer-copy span,
   .mobile-layout .result-announcer-copy em {
-    font-size: 0.72rem;
+    font-size: 0.66rem;
   }
 
   .mobile-banner {
     position: fixed;
-    bottom: 20px;
+    bottom: 18px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 30;
-    padding: 8px 18px;
+    padding: 7px 16px;
     border-radius: 999px;
     background: linear-gradient(180deg, rgba(255, 203, 77, 0.95), rgba(255, 75, 152, 0.92));
     color: #1a0510;
     font-family: 'Orbitron', 'Rajdhani', sans-serif;
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     font-weight: 800;
     letter-spacing: 0.06em;
     text-align: center;
@@ -3054,80 +3057,80 @@ img {
     flex: 0 0 auto;
     display: flex;
     flex-direction: column;
-    min-height: 56px;
-    max-height: 120px;
+    min-height: 52px;
+    max-height: 100px;
   }
 
   .mobile-result-panel .banner-result-head {
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     padding: 0 2px;
   }
 
   .mobile-result-panel .banner-result-list {
     height: auto;
-    min-height: 44px;
-    max-height: 96px;
+    min-height: 40px;
+    max-height: 80px;
     display: grid;
     grid-template-columns: 1fr;
-    gap: 4px;
+    gap: 3px;
     overflow-y: auto;
     overflow-x: hidden;
     padding-right: 2px;
   }
 
   .mobile-result-panel .banner-result-card {
-    min-height: 28px;
-    padding: 4px 8px;
-    border-radius: 9px;
+    min-height: 26px;
+    padding: 3px 7px;
+    border-radius: 8px;
   }
 
   .mobile-result-panel .marquee-text {
-    font-size: 0.65rem;
+    font-size: 0.62rem;
   }
 
   .mobile-result-panel .banner-result-empty {
-    min-height: 44px;
+    min-height: 40px;
   }
 
   .control-card {
     flex: 0 0 auto;
-    padding: 6px 8px;
+    padding: 5px 8px;
   }
 
   .control-card .section-head {
-    margin-bottom: 4px;
+    margin-bottom: 3px;
   }
 
   .control-card .section-head h2 {
-    font-size: 0.82rem;
+    font-size: 0.78rem;
   }
 
   .control-card .section-head span {
-    font-size: 0.68rem;
+    font-size: 0.64rem;
   }
 
   .control-card .primary-action {
     width: 100%;
-    min-height: 38px;
-    font-size: 0.88rem;
-    padding: 8px;
+    min-height: 34px;
+    font-size: 0.82rem;
+    padding: 6px;
   }
 
   .panel-card {
-    padding: 8px;
+    padding: 6px 8px;
   }
 
   .section-head {
     align-items: flex-end;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
 
   .section-head h2 {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
   }
 
   .section-head span {
-    font-size: 0.7rem;
+    font-size: 0.66rem;
   }
 
   .settings-modal {
@@ -3181,42 +3184,44 @@ img {
 
 @media (max-width: 380px) {
   .top-title h1 {
-    font-size: 1.2rem;
+    font-size: 1rem;
   }
 
   .student-switch-main {
-    grid-template-columns: 32px minmax(0, 1fr) 32px;
-    gap: 6px;
+    grid-template-columns: 28px minmax(0, 1fr) 28px;
+    gap: 4px;
   }
 
   .student-nav-button {
-    width: 32px;
-    height: 32px;
-    font-size: 1.1rem;
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
+  }
+
+  .mobile-layout .wheel-light-frame {
+    width: min(88%, 260px);
   }
 
   .mobile-layout .wheel-shell {
-    width: min(calc(100vw - 28px), 260px);
-    max-width: min(calc(100vw - 28px), 260px);
+    max-width: 260px;
   }
 
   .mobile-layout .wheel-label span {
-    min-width: 36px;
-    font-size: 0.45rem;
-    padding: 2px 3px;
+    min-width: 30px;
+    font-size: 0.42rem;
+    padding: 1px 2px;
   }
 
   .mobile-layout .combo-chip {
-    min-height: 26px;
-    font-size: 0.62rem;
-    padding: 3px 2px;
+    min-height: 24px;
+    font-size: 0.58rem;
   }
 
   .mobile-layout .spin-button {
-    min-height: 38px;
+    min-height: 36px;
   }
 
   .mobile-layout .spin-button span {
-    font-size: 0.88rem;
+    font-size: 0.82rem;
   }
 }
