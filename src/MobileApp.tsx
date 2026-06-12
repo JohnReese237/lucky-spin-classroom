@@ -493,9 +493,10 @@ function MobileApp() {
       advanceQueue: params.advanceQueue ?? true,
     })
 
-    // 批量抽奖中间结果：只跳过粒子特效，仍更新 UI 以实时出结果
+    // 批量抽奖中间结果：跳过 React 更新减少重渲染，只更新 ref
     persistState(nextState, {
       writeToStorage: !params.deferSave,
+      skipReactUpdate: params.batchSilent,
     })
 
     if (params.batchSilent) {

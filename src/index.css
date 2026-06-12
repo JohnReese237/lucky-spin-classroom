@@ -2718,19 +2718,26 @@ img {
 }
 
 @media (max-width: 760px) {
-  html,
-  body,
-  #root {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100dvh;
+  /* Use stable height to prevent iOS Safari viewport resize on interaction */
+  html {
+    height: 100%;
     overflow: hidden;
   }
 
   body {
+    position: fixed;
+    inset: 0;
     width: 100%;
+    height: 100%;
     min-width: 0;
+    overflow: hidden;
+    -webkit-overflow-scrolling: none;
+    touch-action: manipulation;
+  }
+
+  #root {
+    width: 100%;
+    height: 100%;
     overflow: hidden;
   }
 
@@ -2775,13 +2782,13 @@ img {
   .app-shell {
     width: 100%;
     min-width: 0;
-    height: 100dvh;
-    min-height: 100dvh;
-    padding: max(6px, env(safe-area-inset-top)) 8px max(6px, env(safe-area-inset-bottom));
+    height: 100%;
+    min-height: 100%;
+    padding: max(4px, env(safe-area-inset-top)) 6px max(4px, env(safe-area-inset-bottom));
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     background-attachment: scroll;
   }
 
@@ -2913,19 +2920,29 @@ img {
     min-height: 0;
     gap: 4px;
     --wheel-stage-visual-offset-x: 0px;
+    transform: none;
     padding-top: 0;
     justify-content: center;
+    align-items: center;
   }
 
-  .mobile-layout .wheel-light-frame,
-  .mobile-layout .wheel-shell {
-    width: min(100%, 340px);
+  .mobile-layout .wheel-light-frame {
+    width: min(95%, 320px);
+    margin: 0 auto;
   }
 
   .mobile-layout .wheel-shell {
-    width: min(calc(100vw - 32px), 300px);
+    width: 100%;
+    max-width: 320px;
     min-width: 0;
-    max-width: min(calc(100vw - 32px), 300px);
+    margin: 0 auto;
+    contain: paint;
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  .mobile-layout .wheel-image {
+    will-change: transform;
   }
 
   .mobile-layout .wheel-label {
@@ -3009,57 +3026,67 @@ img {
 
   .mobile-banner {
     position: fixed;
-    top: 50%;
+    bottom: 20px;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
     z-index: 30;
-    padding: 12px 24px;
-    border-radius: 16px;
+    padding: 8px 18px;
+    border-radius: 999px;
     background: linear-gradient(180deg, rgba(255, 203, 77, 0.95), rgba(255, 75, 152, 0.92));
     color: #1a0510;
     font-family: 'Orbitron', 'Rajdhani', sans-serif;
-    font-size: 0.88rem;
+    font-size: 0.78rem;
     font-weight: 800;
     letter-spacing: 0.06em;
     text-align: center;
-    box-shadow: 0 12px 32px rgba(255, 74, 144, 0.3);
+    white-space: nowrap;
+    box-shadow: 0 8px 24px rgba(255, 74, 144, 0.3);
     pointer-events: none;
     animation: mobile-banner-pop 0.3s ease-out;
   }
 
   @keyframes mobile-banner-pop {
-    from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
   }
 
   .mobile-result-panel {
     flex: 0 0 auto;
     display: flex;
+    flex-direction: column;
+    min-height: 56px;
+    max-height: 120px;
   }
 
   .mobile-result-panel .banner-result-head {
-    font-size: 0.7rem;
+    font-size: 0.72rem;
+    padding: 0 2px;
   }
 
   .mobile-result-panel .banner-result-list {
     height: auto;
-    max-height: 52px;
-    min-height: 32px;
+    min-height: 44px;
+    max-height: 96px;
     display: grid;
     grid-template-columns: 1fr;
-    gap: 3px;
+    gap: 4px;
     overflow-y: auto;
     overflow-x: hidden;
+    padding-right: 2px;
   }
 
   .mobile-result-panel .banner-result-card {
-    min-height: 26px;
-    padding: 0 6px;
-    border-radius: 8px;
+    min-height: 28px;
+    padding: 4px 8px;
+    border-radius: 9px;
   }
 
   .mobile-result-panel .marquee-text {
-    font-size: 0.6rem;
+    font-size: 0.65rem;
+  }
+
+  .mobile-result-panel .banner-result-empty {
+    min-height: 44px;
   }
 
   .control-card {
